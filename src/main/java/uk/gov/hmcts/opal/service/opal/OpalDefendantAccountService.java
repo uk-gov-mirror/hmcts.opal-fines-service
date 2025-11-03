@@ -129,7 +129,6 @@ public class OpalDefendantAccountService implements DefendantAccountServiceInter
 
     private final FixedPenaltyOffenceRepository fixedPenaltyOffenceRepository;
 
-
     @Autowired
     private DebtorDetailRepository debtorDetailRepository;
 
@@ -610,7 +609,7 @@ public class OpalDefendantAccountService implements DefendantAccountServiceInter
             .vehicleFixedPenaltyFlag(isVehicle)
             .fixedPenaltyTicketDetails(ticketDetails)
             .vehicleFixedPenaltyDetails(vehicleDetails)
-            .version(String.valueOf(account.getVersion()))
+            .version(account.getVersion())
             .build();
     }
 
