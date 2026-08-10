@@ -92,7 +92,7 @@ class LegacyDefendantAccountPaymentTermsServiceTest {
 
         // Given
         AddPaymentCardLegacyResponse legacyResp =
-            new AddPaymentCardLegacyResponse("123", "4");
+            new AddPaymentCardLegacyResponse("123", BigInteger.valueOf(4));
 
         GatewayService.Response<AddPaymentCardLegacyResponse> gwResp =
             new GatewayService.Response<>(HttpStatus.OK, legacyResp, null, null);
@@ -120,7 +120,7 @@ class LegacyDefendantAccountPaymentTermsServiceTest {
         // Given
         GatewayService.Response<AddPaymentCardLegacyResponse> gwResp =
             new GatewayService.Response<>(HttpStatus.OK,
-                new AddPaymentCardLegacyResponse("123", "4"),
+                new AddPaymentCardLegacyResponse("123", BigInteger.valueOf(4)),
                 null, null);
 
         ArgumentCaptor<AddPaymentCardLegacyRequest> captor =
@@ -140,7 +140,7 @@ class LegacyDefendantAccountPaymentTermsServiceTest {
         AddPaymentCardLegacyRequest sent = captor.getValue();
         assertEquals("123", sent.getDefendantAccountId());
         assertEquals("78", sent.getBusinessUnitId());
-        assertEquals(String.valueOf(9), sent.getVersion());
+        assertEquals(BigInteger.valueOf(9), sent.getVersion());
         assertEquals("L080JG", sent.getBusinessUnitUserId());
     }
 
@@ -234,7 +234,7 @@ class LegacyDefendantAccountPaymentTermsServiceTest {
     void legacyPaymentTerms_nonNullEnums_areConverted() {
 
         var legacy = LegacyGetDefendantAccountPaymentTermsResponse.builder()
-            .version(1L)
+            .version(BigInteger.valueOf(1L))
             .paymentTerms(
                 uk.gov.hmcts.opal.dto.legacy.LegacyPaymentTerms.builder()
                     .paymentTermsType(new uk.gov.hmcts.opal.dto.legacy.LegacyPaymentTermsType(
@@ -321,7 +321,7 @@ class LegacyDefendantAccountPaymentTermsServiceTest {
         // legacy with version present but no paymentTerms
         LegacyGetDefendantAccountPaymentTermsResponse legacy =
             LegacyGetDefendantAccountPaymentTermsResponse.builder()
-                .version(2L)
+                .version(BigInteger.valueOf(2L))
                 .paymentTerms(null)
                 .paymentCardLastRequested(LocalDate.parse("2024-01-01"))
                 .lastEnforcement("LE-1")

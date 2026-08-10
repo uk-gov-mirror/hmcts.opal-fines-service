@@ -10,6 +10,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
 
@@ -34,7 +35,7 @@ class LegacyDefAccServiceAddEnforcementTest extends AbstractLegacyDefAccServiceT
             mock(AddDefendantAccountEnforcementLegacyResponse.class);
         when(legacyResp.getEnforcementId()).thenReturn("ENF-1");
         when(legacyResp.getDefendantAccountId()).thenReturn("123");
-        when(legacyResp.getVersion()).thenReturn(1);
+        when(legacyResp.getVersion()).thenReturn(BigInteger.valueOf(1));
 
         GatewayService.Response<AddDefendantAccountEnforcementLegacyResponse> resp =
             new GatewayService.Response<>(HttpStatus.OK, legacyResp, null, null);
@@ -52,7 +53,7 @@ class LegacyDefAccServiceAddEnforcementTest extends AbstractLegacyDefAccServiceT
         assertNotNull(out);
         assertEquals("ENF-1", out.getEnforcementId());
         assertEquals("123", out.getDefendantAccountId());
-        assertEquals(1, out.getVersion());
+        assertEquals(BigInteger.ONE, out.getVersion());
     }
 
     @Test
@@ -61,7 +62,7 @@ class LegacyDefAccServiceAddEnforcementTest extends AbstractLegacyDefAccServiceT
             mock(AddDefendantAccountEnforcementLegacyResponse.class);
         when(legacyResp.getEnforcementId()).thenReturn("ENF-500");
         when(legacyResp.getDefendantAccountId()).thenReturn("500");
-        when(legacyResp.getVersion()).thenReturn(5);
+        when(legacyResp.getVersion()).thenReturn(BigInteger.valueOf(5));
 
         GatewayService.Response<AddDefendantAccountEnforcementLegacyResponse> resp =
             new GatewayService.Response<>(HttpStatus.SERVICE_UNAVAILABLE, legacyResp, "<legacy-failure/>", null);
@@ -79,7 +80,7 @@ class LegacyDefAccServiceAddEnforcementTest extends AbstractLegacyDefAccServiceT
         assertNotNull(out);
         assertEquals("ENF-500", out.getEnforcementId());
         assertEquals("500", out.getDefendantAccountId());
-        assertEquals(5, out.getVersion());
+        assertEquals(BigInteger.valueOf(5), out.getVersion());
     }
 
     @Test
@@ -104,7 +105,7 @@ class LegacyDefAccServiceAddEnforcementTest extends AbstractLegacyDefAccServiceT
             mock(AddDefendantAccountEnforcementLegacyResponse.class);
         when(legacyResp.getEnforcementId()).thenReturn("ENF-CAP");
         when(legacyResp.getDefendantAccountId()).thenReturn("999");
-        when(legacyResp.getVersion()).thenReturn(11);
+        when(legacyResp.getVersion()).thenReturn(BigInteger.valueOf(11));
 
         GatewayService.Response<AddDefendantAccountEnforcementLegacyResponse> resp =
             new GatewayService.Response<>(HttpStatus.OK, legacyResp, null, null);
@@ -123,7 +124,7 @@ class LegacyDefAccServiceAddEnforcementTest extends AbstractLegacyDefAccServiceT
         assertNotNull(out);
         assertEquals("ENF-CAP", out.getEnforcementId());
         assertEquals("999", out.getDefendantAccountId());
-        assertEquals(11, out.getVersion());
+        assertEquals(BigInteger.valueOf(11), out.getVersion());
 
         Object sentLegacyRequest = reqCaptor.getValue();
         assertNotNull(sentLegacyRequest);
@@ -154,7 +155,7 @@ class LegacyDefAccServiceAddEnforcementTest extends AbstractLegacyDefAccServiceT
             mock(AddDefendantAccountEnforcementLegacyResponse.class);
         when(legacyResp.getEnforcementId()).thenReturn("ENF-500");
         when(legacyResp.getDefendantAccountId()).thenReturn("500");
-        when(legacyResp.getVersion()).thenReturn(5);
+        when(legacyResp.getVersion()).thenReturn(BigInteger.valueOf(5));
 
         GatewayService.Response<AddDefendantAccountEnforcementLegacyResponse> resp =
             new GatewayService.Response<>(HttpStatus.SERVICE_UNAVAILABLE, legacyResp, "<legacy-failure/>", null);
@@ -172,7 +173,7 @@ class LegacyDefAccServiceAddEnforcementTest extends AbstractLegacyDefAccServiceT
         assertNotNull(out);
         assertEquals("ENF-500", out.getEnforcementId());
         assertEquals("500", out.getDefendantAccountId());
-        assertEquals(5, out.getVersion());
+        assertEquals(BigInteger.valueOf(5), out.getVersion());
     }
 
     @Test

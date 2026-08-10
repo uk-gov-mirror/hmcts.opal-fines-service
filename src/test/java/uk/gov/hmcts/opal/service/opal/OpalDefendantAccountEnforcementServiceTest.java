@@ -4,6 +4,7 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.lang.reflect.Method;
+import java.math.BigInteger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -1018,7 +1019,7 @@ class OpalDefendantAccountEnforcementServiceTest {
 
     private void assertCommonResponse(AddEnforcementResponse response) {
         assertEquals(String.valueOf(DEFENDANT_ACCOUNT_ID), response.getDefendantAccountId());
-        assertEquals(0, response.getVersion());
+        assertEquals(BigInteger.ZERO, response.getVersion());
         assertEquals(String.valueOf(ENFORCEMENT_ID), response.getEnforcementId());
         verify(defendantAccountRepositoryService).refresh(ArgumentMatchers.any(DefendantAccountEntity.class));
     }
