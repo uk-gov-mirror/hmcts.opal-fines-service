@@ -233,12 +233,12 @@ public class DraftAccountService {
         log.info(":updateDraftAccount: unit user: {}", unitUser);
         if (UserState.userHasPermission(unitUser, FinesPermission.CHECK_VALIDATE_DRAFT_ACCOUNTS)) {
             BusinessUnitUser businessUnitUser = unitUser.orElseThrow();
-            String validatedBy = businessUnitUser.getBusinessUnitUserId();
-            String validatedByName = userState.getDisplayName();
+            String statusUpdatedBy = businessUnitUser.getBusinessUnitUserId();
+            String statusUpdatedByName = userState.getDisplayName();
             jsonSchemaValidationService.validateOrError(dto.toJson(), UPDATE_DRAFT_ACCOUNT_REQUEST_JSON);
             BigInteger updateVersion = extractBigInteger(ifMatch);
             DraftAccountEntity updatedEntity = draftAccountTransactional.updateDraftAccount(draftAccountId, dto,
-                draftAccountTransactional, updateVersion, userState, validatedBy, validatedByName);
+                draftAccountTransactional, updateVersion, userState, statusUpdatedBy, statusUpdatedByName);
             verifyUpdated(updatedEntity, updateVersion, draftAccountId, "updateDraftAccount");
 
             loggingService.pdplForDraftAccount(updatedEntity, Action.RESUBMIT, userState);

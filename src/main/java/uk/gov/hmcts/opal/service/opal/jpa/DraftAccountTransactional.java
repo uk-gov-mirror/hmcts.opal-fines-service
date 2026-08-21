@@ -173,7 +173,8 @@ public class DraftAccountTransactional implements DraftAccountTransactionalProxy
     @Transactional
     public DraftAccountEntity updateDraftAccount(Long draftAccountId, UpdateDraftAccountRequestDto dto,
                                                  DraftAccountTransactionalProxy proxy, BigInteger updateVersion,
-                                                 UserState userState, String validatedBy, String validatedByName) {
+                                                 UserState userState, String statusUpdatedBy,
+                                                 String statusUpdatedByName) {
         DraftAccountEntity existingAccount = proxy.getDraftAccount(draftAccountId);
         verifyIfMatch(existingAccount, updateVersion, draftAccountId, "updateDraftAccount");
 
@@ -199,11 +200,11 @@ public class DraftAccountTransactional implements DraftAccountTransactionalProxy
 
         if (newStatus.isPublishingPending()) {
             LocalDateTime validationTimestamp = LocalDateTime.now(clock);
-            checkValidatorIsNotSubmitter(existingAccount.getSubmittedBy(), validatedBy, draftAccountId,
+            checkValidatorIsNotSubmitter(existingAccount.getSubmittedBy(), statusUpdatedBy, draftAccountId,
                 userState, dto.getBusinessUnitId());
             existingAccount.setValidatedDate(validationTimestamp);
-            existingAccount.setValidatedBy(validatedBy);
-            existingAccount.setValidatedByName(validatedByName);
+            existingAccount.setValidatedBy(statusUpdatedBy);
+            existingAccount.setValidatedByName(statusUpdatedByName);
             existingAccount.setAccountSnapshot(addSnapshotApprovedDate(existingAccount));
             existingAccount.setAccountStatusDate(validationTimestamp);
         }
@@ -215,7 +216,7 @@ public class DraftAccountTransactional implements DraftAccountTransactionalProxy
         }
 
         existingAccount.setTimelineData(
-            appendTimelineEntry(existingAccount.getTimelineData(), validatedBy, newStatus, dto.getReasonText())
+            appendTimelineEntry(existingAccount.getTimelineData(), statusUpdatedBy, newStatus, dto.getReasonText())
         );
 
         log.info(":updateDraftAccount: Updating draft account with ID: {} and status: {}",

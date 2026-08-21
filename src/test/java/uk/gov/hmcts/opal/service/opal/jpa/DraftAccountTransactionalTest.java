@@ -301,7 +301,8 @@ class DraftAccountTransactionalTest {
 
         // Act & Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () ->
-            draftAccountTransactional.replaceDraftAccount(draftAccountId, replaceDto, draftAccountTransactional, "", "TestUser", "Test User")
+            draftAccountTransactional.replaceDraftAccount(
+                draftAccountId, replaceDto, draftAccountTransactional, "", "TestUser", "Test User")
         );
         assertEquals("Draft Account not found with id: 1", exception.getMessage());
     }
@@ -324,7 +325,8 @@ class DraftAccountTransactionalTest {
 
         // Act & Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () ->
-            draftAccountTransactional.replaceDraftAccount(draftAccountId, replaceDto, draftAccountTransactional, "0", "TestUser", "Test User")
+            draftAccountTransactional.replaceDraftAccount(
+                draftAccountId, replaceDto, draftAccountTransactional, "0", "TestUser", "Test User")
         );
         assertEquals("Business Unit not found with id: 2", exception.getMessage());
     }
@@ -355,7 +357,8 @@ class DraftAccountTransactionalTest {
 
         // Act & Assert
         assertThrows(ResourceConflictException.class, () ->
-            draftAccountTransactional.replaceDraftAccount(draftAccountId, dto, draftAccountTransactional, "0", "TestUser", "Test User")
+            draftAccountTransactional.replaceDraftAccount(
+                draftAccountId, dto, draftAccountTransactional, "0", "TestUser", "Test User")
         );
     }
 

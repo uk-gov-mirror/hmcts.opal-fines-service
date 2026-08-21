@@ -5,10 +5,14 @@ import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.converter.HttpMessageConverter;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdviceAdapter;
 import uk.gov.hmcts.opal.annotation.JsonSchemaValidated;
 import uk.gov.hmcts.opal.exception.JsonSchemaValidationException;
+import uk.gov.hmcts.opal.exception.ProhibitedDraftAccountRequestFieldException;
+import uk.gov.hmcts.opal.common.dto.ToJsonString;
 import uk.gov.hmcts.opal.service.opal.JsonSchemaValidationService;
 
 import java.io.ByteArrayInputStream;
@@ -17,6 +21,7 @@ import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 @AllArgsConstructor
@@ -80,12 +85,27 @@ public class JsonSchemaValidationAdvice extends RequestBodyAdviceAdapter {
 
     private static void rejectTokenDerivedFieldsForDraftAccountRequests(String body, String schemaPath) {
         if (schemaPath.contains("draft-account")
-            && DRAFT_ACCOUNT_REQUEST_SCHEMAS.stream().anyMatch(schemaPath::contains)
-            && TOKEN_DERIVED_DRAFT_ACCOUNT_FIELDS.stream().anyMatch(field -> body.contains("\"" + field + "\""))) {
-            throw new JsonSchemaValidationException(
-                "submitted_by, submitted_by_name, validated_by and validated_by_name are not allowed in draft account "
-                    + "requests"
-            );
+            && DRAFT_ACCOUNT_REQUEST_SCHEMAS.stream().anyMatch(schemaPath::contains)) {
+            Set<String> prohibitedFields = getTokenDerivedTopLevelFields(body);
+            if (!prohibitedFields.isEmpty()) {
+                throw new ProhibitedDraftAccountRequestFieldException(
+                    String.join(", ", prohibitedFields) + " are not allowed in draft account requests"
+                );
+            }
+        }
+    }
+
+    private static Set<String> getTokenDerivedTopLevelFields(String body) {
+        try {
+            JsonNode root = ToJsonString.getObjectMapper().readTree(body);
+            if (!root.isObject()) {
+                return Set.of();
+            }
+            return TOKEN_DERIVED_DRAFT_ACCOUNT_FIELDS.stream()
+                .filter(root::has)
+                .collect(Collectors.toSet());
+        } catch (JacksonException ex) {
+            return Set.of();
         }
     }
 }

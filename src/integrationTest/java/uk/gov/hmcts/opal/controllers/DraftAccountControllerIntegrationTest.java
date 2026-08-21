@@ -75,7 +75,7 @@ class DraftAccountControllerIntegrationTest extends CommonDraftAccountController
     @JiraStory("PO-2461")
     @JiraEpic("PO-2219")
     void methodsShouldReturn400_whenTokenDerivedFieldsAreSupplied(
-        MockHttpServletRequestBuilder requestBuilder, String requestBody) throws Exception {
+        MockHttpServletRequestBuilder requestBuilder, String requestBody, String prohibitedField) throws Exception {
 
         mockMvc.perform(requestBuilder
                 .with(userStateStub.getAuthenticaitonRequestPostProcessor())
@@ -87,10 +87,7 @@ class DraftAccountControllerIntegrationTest extends CommonDraftAccountController
             .andExpect(status().isBadRequest())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
             .andExpect(jsonPath("$.detail", containsString("not allowed in draft account requests")))
-            .andExpect(jsonPath("$.detail", containsString("submitted_by")))
-            .andExpect(jsonPath("$.detail", containsString("submitted_by_name")))
-            .andExpect(jsonPath("$.detail", containsString("validated_by")))
-            .andExpect(jsonPath("$.detail", containsString("validated_by_name")));
+            .andExpect(jsonPath("$.detail", containsString(prohibitedField)));
     }
 
     private static Stream<Arguments> endpointsWithInvalidBodiesProvider() {
@@ -101,11 +98,14 @@ class DraftAccountControllerIntegrationTest extends CommonDraftAccountController
     }
 
     private static Stream<Arguments> endpointsWithTokenDerivedFieldsProvider() {
-        return Stream.of(
-            Arguments.of(post(URL_BASE), requestBodyWithTokenDerivedFields()),
-            Arguments.of(put(URL_BASE + "/1"), requestBodyWithTokenDerivedFields()),
-            Arguments.of(patch(URL_BASE + "/1"), updateRequestBodyWithTokenDerivedFields())
-        );
+        return Stream.of("submitted_by", "submitted_by_name", "validated_by", "validated_by_name")
+            .flatMap(prohibitedField -> Stream.of(
+                Arguments.of(post(URL_BASE), requestBodyWithTokenDerivedField(prohibitedField), prohibitedField),
+                Arguments.of(put(URL_BASE + "/1"), requestBodyWithTokenDerivedField(prohibitedField),
+                             prohibitedField),
+                Arguments.of(patch(URL_BASE + "/1"), updateRequestBodyWithTokenDerivedField(prohibitedField),
+                             prohibitedField)
+            ));
     }
 
     //CEP3 - Not Authorised to perform the requested action (403)
@@ -204,29 +204,23 @@ class DraftAccountControllerIntegrationTest extends CommonDraftAccountController
         );
     }
 
-    private static String requestBodyWithTokenDerivedFields() {
+    private static String requestBodyWithTokenDerivedField(String fieldName) {
         return """
             {
               "business_unit_id": 78,
-              "submitted_by": "client-user",
-              "submitted_by_name": "Client User",
-              "validated_by": "client-validator",
-              "validated_by_name": "Client Validator",
+              "%s": "client-supplied",
               "account": {},
               "account_type": "Fine"
-            }""";
+            }""".formatted(fieldName);
     }
 
-    private static String updateRequestBodyWithTokenDerivedFields() {
+    private static String updateRequestBodyWithTokenDerivedField(String fieldName) {
         return """
             {
               "business_unit_id": 78,
               "account_status": "Publishing Pending",
-              "submitted_by": "client-user",
-              "submitted_by_name": "Client User",
-              "validated_by": "client-validator",
-              "validated_by_name": "Client Validator"
-            }""";
+              "%s": "client-supplied"
+            }""".formatted(fieldName);
     }
 
     private static String validCreateRequestBody() {

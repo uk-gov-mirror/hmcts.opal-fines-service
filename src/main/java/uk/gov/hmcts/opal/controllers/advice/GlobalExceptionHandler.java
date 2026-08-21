@@ -26,6 +26,7 @@ import uk.gov.hmcts.opal.common.user.authorisation.exception.PermissionNotAllowe
 import uk.gov.hmcts.opal.exception.DefendantAccountNotFoundException;
 import uk.gov.hmcts.opal.exception.InvalidReferenceValidationException;
 import uk.gov.hmcts.opal.exception.JsonSchemaValidationException;
+import uk.gov.hmcts.opal.exception.ProhibitedDraftAccountRequestFieldException;
 import uk.gov.hmcts.opal.exception.MissingMappingTypeException;
 import uk.gov.hmcts.opal.exception.MissingReportServiceException;
 import uk.gov.hmcts.opal.exception.MissingStoredReportContentException;
@@ -240,7 +241,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(JsonSchemaValidationException.class)
     public ResponseEntity<ProblemDetail> handleJsonSchemaValidationException(JsonSchemaValidationException ex) {
-        String detail = ex.getMessage().contains("not allowed in draft account requests")
+        String detail = ex instanceof ProhibitedDraftAccountRequestFieldException
             ? ex.getMessage()
             : "The request does not conform to the required JSON schema";
         ProblemDetail problemDetail = createProblemDetail(
