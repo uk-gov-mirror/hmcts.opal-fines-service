@@ -1,5 +1,6 @@
 package uk.gov.hmcts.opal.controllers;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -69,10 +70,41 @@ class DraftAccountControllerIntegrationTest extends CommonDraftAccountController
             .andExpect(status().isBadRequest());
     }
 
+    @ParameterizedTest(name = "Token-derived request fields return 400 [{index}]")
+    @MethodSource("endpointsWithTokenDerivedFieldsProvider")
+    @JiraStory("PO-2461")
+    @JiraEpic("PO-2219")
+    void methodsShouldReturn400_whenTokenDerivedFieldsAreSupplied(
+        MockHttpServletRequestBuilder requestBuilder, String requestBody) throws Exception {
+
+        mockMvc.perform(requestBuilder
+                .with(userStateStub.getAuthenticaitonRequestPostProcessor())
+                .header("authorization", userStateStub.getBearerToken())
+                .header("Accept", "application/json")
+                .header("If-Match", "0")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+            .andExpect(jsonPath("$.detail", containsString("not allowed in draft account requests")))
+            .andExpect(jsonPath("$.detail", containsString("submitted_by")))
+            .andExpect(jsonPath("$.detail", containsString("submitted_by_name")))
+            .andExpect(jsonPath("$.detail", containsString("validated_by")))
+            .andExpect(jsonPath("$.detail", containsString("validated_by_name")));
+    }
+
     private static Stream<Arguments> endpointsWithInvalidBodiesProvider() {
         return Stream.of(Arguments.of(post(URL_BASE), invalidCreateRequestBody()),
             Arguments.of(put(URL_BASE + "/1"), invalidCreateRequestBody()),
             Arguments.of(patch(URL_BASE + "/1"), invalidCreateRequestBody())
+        );
+    }
+
+    private static Stream<Arguments> endpointsWithTokenDerivedFieldsProvider() {
+        return Stream.of(
+            Arguments.of(post(URL_BASE), requestBodyWithTokenDerivedFields()),
+            Arguments.of(put(URL_BASE + "/1"), requestBodyWithTokenDerivedFields()),
+            Arguments.of(patch(URL_BASE + "/1"), updateRequestBodyWithTokenDerivedFields())
         );
     }
 
@@ -172,12 +204,35 @@ class DraftAccountControllerIntegrationTest extends CommonDraftAccountController
         );
     }
 
+    private static String requestBodyWithTokenDerivedFields() {
+        return """
+            {
+              "business_unit_id": 78,
+              "submitted_by": "client-user",
+              "submitted_by_name": "Client User",
+              "validated_by": "client-validator",
+              "validated_by_name": "Client Validator",
+              "account": {},
+              "account_type": "Fine"
+            }""";
+    }
+
+    private static String updateRequestBodyWithTokenDerivedFields() {
+        return """
+            {
+              "business_unit_id": 78,
+              "account_status": "Publishing Pending",
+              "submitted_by": "client-user",
+              "submitted_by_name": "Client User",
+              "validated_by": "client-validator",
+              "validated_by_name": "Client Validator"
+            }""";
+    }
+
     private static String validCreateRequestBody() {
         return """
             {
               "business_unit_id": 78,
-              "submitted_by": "BUUID1",
-              "submitted_by_name": "John",
               "account": {
                 "account_type": "Fine",
                 "defendant_type": "Adult",
