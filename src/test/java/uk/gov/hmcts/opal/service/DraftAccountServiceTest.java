@@ -490,6 +490,44 @@ class DraftAccountServiceTest {
         verify(jsonSchemaValidationService).validateOrError(any(), any());
     }
 
+    @Test
+    void testUpdateDraftAccount_deletedPassesAuthenticatedUserForTimelineActor() {
+        Long draftAccountId = 1L;
+        UpdateDraftAccountRequestDto updateDto = UpdateDraftAccountRequestDto.builder()
+            .accountStatus(DraftAccountStatus.DELETED)
+            .businessUnitId((short) 2)
+            .build();
+        DraftAccountEntity updatedAccount = DraftAccountEntity.builder()
+            .draftAccountId(draftAccountId)
+            .accountStatus(DraftAccountStatus.DELETED)
+            .timelineData(createTimelineDataString())
+            .versionNumber(1L)
+            .build();
+        var userState = UserStateUtil.permissionUser((short) 2, FinesPermission.CHECK_VALIDATE_DRAFT_ACCOUNTS);
+
+        when(draftAccountTransactional.updateDraftAccount(any(), any(), any(), any(), any(), any(), any()))
+            .thenReturn(updatedAccount);
+        when(userStateService.getUserStateV1FromSecurityContext()).thenReturn(userState);
+        when(draftAccountMapper.toResponseDto(updatedAccount)).thenReturn(
+            DraftAccountResponseDto.builder()
+                .draftAccountId(draftAccountId)
+                .accountStatus(DraftAccountStatus.DELETED)
+                .timelineData(updatedAccount.getTimelineData())
+                .build()
+        );
+
+        DraftAccountResponseDto result = draftAccountService
+            .updateDraftAccount(draftAccountId, updateDto, "0");
+
+        assertNotNull(result);
+        assertEquals(DraftAccountStatus.DELETED, result.getAccountStatus());
+        verify(draftAccountTransactional)
+            .updateDraftAccount(any(), any(), any(), any(), any(), eq("USER01"), eq("Normal User"));
+        verify(draftAccountPublishProxy, never()).publishDefendantAccount(any(), any());
+        verify(pdplLoggingService).pdplForDraftAccount(updatedAccount, Action.RESUBMIT, userState);
+        verify(jsonSchemaValidationService).validateOrError(any(), any());
+    }
+
     private void publishPending_success(DraftAccountEntity updatedAccount, Long draftAccountId,
         UpdateDraftAccountRequestDto updateDto, UserState userState) {
 
