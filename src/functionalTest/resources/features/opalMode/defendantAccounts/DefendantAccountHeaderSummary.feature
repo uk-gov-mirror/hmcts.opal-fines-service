@@ -6,7 +6,7 @@ Feature: Defendant Account Header Summary
     Given a defendant account with header summary data exists for submitted by "PO2964-TFO-001" using fixture "draftAccounts/accountJson/adultAccount.json"
     When I request defendant account header summary for the created defendant account
     Then the defendant account header summary response is returned as documented
-    And the defendant account header summary contains originator type "TFO"
+    And the defendant account header summary contains originator type "NEW"
     And the defendant account header summary contains originator name "Humber Magistrates' Court"
     And the defendant account header summary contains collection order "true"
     And the defendant account header summary contains party details organisation flag "false"
@@ -19,7 +19,7 @@ Feature: Defendant Account Header Summary
     Given a defendant account with header summary data exists for submitted by "PO2964-TFO-002" using fixture "draftAccounts/accountJson/parentOrGuardianAccount.json"
     When I request defendant account header summary for the created defendant account
     Then the defendant account header summary response is returned as documented
-    And the defendant account header summary contains originator type "TFO"
+    And the defendant account header summary contains originator type "NEW"
     And the defendant account header summary contains originator name "Humber Magistrates' Court"
     And the defendant account header summary contains collection order "false"
     And the defendant account header summary contains party details organisation flag "false"
