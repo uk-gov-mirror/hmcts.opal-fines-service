@@ -199,7 +199,7 @@ class DraftAccountControllerPutIntegrationTest extends CommonDraftAccountControl
     @JiraEpic("PO-2355")
     @JiraTestKey("PO-5868")
     void testPutDraftAccount_success_and_pdplServiceCalled() throws Exception {
-        String validRequestBody = validReplaceRequestBodyForPdpl(0L);
+        final String validRequestBody = validReplaceRequestBodyForPdpl(0L);
 
         when(loggingService.personalDataAccessLogAsync(any())).thenReturn(true);
 
@@ -292,7 +292,7 @@ class DraftAccountControllerPutIntegrationTest extends CommonDraftAccountControl
     @JiraEpic("PO-2355")
     @JiraTestKey("PO-5866")
     void testPutDraftAccount_defendantOnly_pdplLogged() throws Exception {
-        String validRequestBody = validReplaceRequestBodyDefendantOnly(0L);
+        final String validRequestBody = validReplaceRequestBodyDefendantOnly(0L);
 
         when(loggingService.personalDataAccessLogAsync(any())).thenReturn(true);
 
@@ -335,7 +335,7 @@ class DraftAccountControllerPutIntegrationTest extends CommonDraftAccountControl
     @JiraEpic("PO-2355")
     @JiraTestKey("PO-5871")
     void testPutDraftAccount_parentGuardianOnly_pdplLogged() throws Exception {
-        String validRequestBody = validReplaceRequestBodyParentGuardianOnly(0L);
+        final String validRequestBody = validReplaceRequestBodyParentGuardianOnly(0L);
 
         when(loggingService.personalDataAccessLogAsync(any())).thenReturn(true);
 
@@ -405,7 +405,7 @@ class DraftAccountControllerPutIntegrationTest extends CommonDraftAccountControl
     @JiraEpic("PO-2355")
     @JiraTestKey("PO-5867")
     void testPutDraftAccount_minorCreditorOnly_pdplLogged() throws Exception {
-        String validRequestBody = validReplaceRequestBodyMinorCreditorOnly(0L);
+        final String validRequestBody = validReplaceRequestBodyMinorCreditorOnly(0L);
 
         when(loggingService.personalDataAccessLogAsync(any())).thenReturn(true);
 
@@ -532,8 +532,8 @@ class DraftAccountControllerPutIntegrationTest extends CommonDraftAccountControl
     @JiraEpic("PO-2220")
     @JiraTestKey("PO-9389")
     void testReplaceDraftAccount_referenceValidationFailure_returns400AndLeavesDataUnchanged() throws Exception {
-        DraftAccountEntity before = getDraftAccount(5L);
-        long countBefore = draftAccountRepository.count();
+        final DraftAccountEntity before = getDraftAccount(5L);
+        final long countBefore = draftAccountRepository.count();
         String ifMatch = getIfMatchForDraftAccount(5L);
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(AUTH_HEADER);
@@ -824,7 +824,7 @@ class DraftAccountControllerPutIntegrationTest extends CommonDraftAccountControl
     @JiraStory("PO-5745")
     @JiraEpic("PO-8248")
     void testReplaceDraftAccount_whenEnforcementCourtDoesNotExist_returns400AndLeavesDataUnchanged() throws Exception {
-        DraftAccountEntity before = getDraftAccount(5L);
+        final DraftAccountEntity before = getDraftAccount(5L);
 
         String ifMatch = getIfMatchForDraftAccount(5L);
         HttpHeaders headers = new HttpHeaders();

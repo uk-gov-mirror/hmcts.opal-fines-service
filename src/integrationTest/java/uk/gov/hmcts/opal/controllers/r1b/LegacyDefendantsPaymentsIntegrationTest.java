@@ -200,6 +200,6 @@ class LegacyDefendantsPaymentsIntegrationTest extends AbstractLegacyDefendantsIn
             .willReturn(aResponse()
                 .withStatus(status)
                 .withHeader("Content-Type", MediaType.APPLICATION_XML_VALUE)
-                .withBody(body)))
+                .withBody(body)));
     }
 }

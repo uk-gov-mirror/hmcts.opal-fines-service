@@ -521,6 +521,7 @@ public class ReportInstancesControllerIntegrationTest extends AbstractIntegratio
             .readValue(body2, CreateReportInstanceResponseReports.class);
         assertNotEquals(dto1.getReportInstanceId(), dto2.getReportInstanceId());
     }
+
     private MockHttpServletRequestBuilder authorisedPost() {
         return post(URL_BASE).header(AUTHORIZATION, "Bearer " + AUTH_HEADER);
     }

@@ -499,6 +499,6 @@ class OpalMinorCreditorHistoryIntegrationTest extends AbstractIntegrationTest {
         String itemPath = "$.historyItems[" + index + "]";
         result.andExpect(jsonPath(itemPath + ".type").value("Note"))
             .andExpect(jsonPath(itemPath + ".postedDetails.posted_date").value(postedDate))
-            .andExpect(jsonPath(itemPath + ".details.noteText").value(noteText))
+            .andExpect(jsonPath(itemPath + ".details.noteText").value(noteText));
     }
 }
